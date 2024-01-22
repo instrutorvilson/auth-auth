@@ -6,6 +6,7 @@ using Autenticacao.Data;
 using Autenticacao.Models;
 using Microsoft.IdentityModel.Tokens;
 using Autenticacao.Config;
+using Autenticacao.Dtos;
 
 namespace Autenticacao.Controllers
 {
@@ -38,15 +39,15 @@ namespace Autenticacao.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<dynamic>> login(User user)
+        public async Task<ActionResult<dynamic>> login(UserDto user)
         {
             string token = "";
             var users = await _context.usuarios.ToListAsync();
-            var userLogado = from u in users 
-                             where u.Username == user.Username & u.Password == user.Password
-                             select u;
+            var userLogado = (from u in users 
+                             where u.Username == user.UserName & u.Password == user.Password
+                             select u).ToList();
              if (!userLogado.IsNullOrEmpty()) {
-               token = TokenService.GenerateToken(user);
+               token = TokenService.GenerateToken(userLogado[0]);
              }
 
             return new { token = token};
