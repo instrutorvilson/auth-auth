@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Autenticacao.Data;
 using Autenticacao.Models;
+using Microsoft.IdentityModel.Tokens;
+using Autenticacao.Config;
 
 namespace Autenticacao.Controllers
 {
@@ -34,7 +36,22 @@ namespace Autenticacao.Controllers
 
             return Ok();
         }
-       
+
+        [HttpPost("login")]
+        public async Task<ActionResult<dynamic>> login(User user)
+        {
+            string token = "";
+            var users = await _context.usuarios.ToListAsync();
+            var userLogado = from u in users 
+                             where u.Username == user.Username & u.Password == user.Password
+                             select u;
+             if (!userLogado.IsNullOrEmpty()) {
+               token = TokenService.GenerateToken(user);
+             }
+
+            return new { token = token};
+        }
+
         private bool UserExists(int id)
         {
             return _context.usuarios.Any(e => e.Id == id);
