@@ -9,5 +9,6 @@ namespace Autenticacao.Data
         {
         }
         public DbSet<User> usuarios { get; set; }
+        public DbSet<Autenticacao.Models.Categoria> Categoria { get; set; } = default!;
     }
 }
